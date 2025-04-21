@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Youtube, Image, Video, BookmarkPlus } from 'lucide-react';
 
+// Home page component: displays main features and navigation
 const Home = () => {
+  // List of main features to display on the homepage
   const features = [
     {
       icon: <Youtube size={48} className="text-white mb-4" />,
@@ -35,6 +37,7 @@ const Home = () => {
     },
   ];
 
+  // Render the homepage layout and feature cards
   return (
     <div>
       <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">

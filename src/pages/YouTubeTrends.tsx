@@ -7,6 +7,7 @@ import { fetchTrendingVideos, searchVideos } from '../services/youtubeApi';
 import { VideoData } from '../types';
 import { useAppContext } from '../context/AppContext';
 
+// YouTubeTrends page component: shows trending YouTube videos and allows search/filter
 const YouTubeTrends = () => {
   const [videos, setVideos] = useState<VideoData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +19,7 @@ const YouTubeTrends = () => {
     loadTrendingVideos();
   }, [selectedCategory]);
 
+  // Loads trending videos from the API
   const loadTrendingVideos = async () => {
     setLoading(true);
     try {
@@ -30,6 +32,7 @@ const YouTubeTrends = () => {
     }
   };
 
+  // Handles the search form submission
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -48,11 +51,13 @@ const YouTubeTrends = () => {
     }
   };
 
+  // Handles category selection and resets search
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setSearchQuery('');
   };
 
+  // Render the YouTube trends page layout
   return (
     <div>
       <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">

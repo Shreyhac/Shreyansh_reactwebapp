@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 import { BookmarkPlus, Trash2, ExternalLink } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
+// SavedIdeas page component: shows saved video ideas
 const SavedIdeas = () => {
   const { savedIdeas, removeFromSavedIdeas } = useAppContext();
 
+  // Render the saved ideas page layout
   return (
     <div>
       <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">

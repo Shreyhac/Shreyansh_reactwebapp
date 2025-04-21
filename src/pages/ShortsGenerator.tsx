@@ -7,6 +7,7 @@ import { uploadVideo, analyzeVideo, generateShort } from '../services/shortsServ
 import { sendEmail } from '../services/emailService';
 import { useAppContext } from '../context/AppContext';
 
+// ShortsGenerator page component: lets users upload videos and generate shorts
 const ShortsGenerator = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [processingProgress, setProcessingProgress] = useState(0);
@@ -19,6 +20,7 @@ const ShortsGenerator = () => {
   
   const { addNotification } = useAppContext();
 
+  // Handles the video file upload and short generation process
   const handleFileSelect = async (file: File) => {
     setIsUploading(true);
     setUploadProgress(0);
@@ -156,6 +158,7 @@ const ShortsGenerator = () => {
     }
   };
   
+  // Render the shorts generator page layout
   return (
     <div>
       <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">

@@ -4,9 +4,11 @@ import { Image } from 'lucide-react';
 import ThumbnailForm from '../components/features/ai/ThumbnailForm';
 import ThumbnailPreview from '../components/features/ai/ThumbnailPreview';
 
+// ThumbnailStudio page component: helps users create thumbnails
 const ThumbnailStudio = () => {
   const [currentThumbnail, setCurrentThumbnail] = useState<string | null>(null);
 
+  // Render the thumbnail studio page layout
   return (
     <div>
       <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">
