@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 16, 21, 133;
+    --color-secondary: 49, 236, 86;
+    --color-accent: 239, 3, 108;
+    --glow-primary: 0 0 15px rgba(16, 21, 133, 0.5);
+    --glow-secondary: 0 0 15px rgba(49, 236, 86, 0.5);
+    --glow-accent: 0 0 15px rgba(239, 3, 108, 0.5);
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-gradient-to-br from-[#0a0a42] to-[#0d0d28] text-white min-h-screen;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+    @apply font-bold;
+  }
+}
+
+@layer components {
+  .cyber-btn {
+    @apply bg-black/30 text-white px-4 py-2 rounded border-2 border-[#31EC56] 
+    shadow-[0_0_15px_rgba(49,236,86,0.5)] hover:shadow-[0_0_20px_rgba(49,236,86,0.7)] 
+    transition-all duration-300 font-medium;
+  }
+  
+  .accent-btn {
+    @apply bg-black/30 text-white px-4 py-2 rounded border-2 border-[#EF036C] 
+    shadow-[0_0_15px_rgba(239,3,108,0.5)] hover:shadow-[0_0_20px_rgba(239,3,108,0.7)] 
+    transition-all duration-300 font-medium;
+  }
+  
+  .glass-card {
+    @apply bg-[#101585]/10 backdrop-blur-md border border-white/10 rounded-lg p-6 shadow-lg;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(16, 21, 133, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(49, 236, 86, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(49, 236, 86, 0.7);
+}
