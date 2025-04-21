@@ -9,6 +9,16 @@ async function wait(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+
 export async function generateThumbnail(prompt: string, retryCount = 0): Promise<string> {
   try {
     const response = await axios({
@@ -37,8 +47,8 @@ export async function generateThumbnail(prompt: string, retryCount = 0): Promise
       timeout: 30000 // 30 second timeout
     });
 
-    // Convert the image buffer to base64
-    const base64Image = Buffer.from(response.data).toString('base64');
+    // Convert the image buffer to base64 (browser compatible)
+    const base64Image = arrayBufferToBase64(response.data);
     return `data:image/jpeg;base64,${base64Image}`;
   } catch (error: any) {
     console.error('Error generating thumbnail:', error.response?.data || error.message);

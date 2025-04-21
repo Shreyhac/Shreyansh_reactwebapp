@@ -21,60 +21,29 @@ export async function uploadVideo(file: File, onProgress?: (progress: number) =>
       throw new Error('File size exceeds 100MB limit.');
     }
 
-    // Get the upload URL
+    // Upload the file directly to AssemblyAI
     const response = await axios.post(
       'https://api.assemblyai.com/v2/upload',
-      {},
+      file,
       {
         headers: {
-          'Authorization': ASSEMBLY_AI_KEY,
-          'Content-Type': 'application/json',
+          'authorization': ASSEMBLY_AI_KEY,
+          'content-type': file.type,
         },
-        timeout: 10000, // 10 second timeout
+        timeout: 60000, // 60 second timeout for large files
+        onUploadProgress: (progressEvent) => {
+          if (onProgress && progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+            onProgress(percent);
+          }
+        }
       }
     );
 
     if (!response.data.upload_url) {
       throw new Error('Failed to get upload URL from AssemblyAI');
     }
-
-    const uploadUrl = response.data.upload_url;
-
-    // Upload the file using XMLHttpRequest for progress tracking
-    const uploadPromise = new Promise<string>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable && onProgress) {
-          const progress = Math.round((event.loaded / event.total) * 100);
-          onProgress(progress);
-        }
-      });
-
-      xhr.addEventListener('load', () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(uploadUrl);
-        } else {
-          reject(new Error(`Upload failed with status ${xhr.status}`));
-        }
-      });
-
-      xhr.addEventListener('error', () => {
-        reject(new Error('Network error during upload'));
-      });
-
-      xhr.addEventListener('timeout', () => {
-        reject(new Error('Upload timed out'));
-      });
-
-      xhr.open('PUT', uploadUrl);
-      xhr.timeout = 60000; // 60 second timeout for large files
-      // Set the correct Content-Type header for the file upload
-      xhr.setRequestHeader('Content-Type', file.type);
-      xhr.send(file);
-    });
-
-    return uploadPromise;
+    return response.data.upload_url;
   } catch (error: any) {
     console.error('Error uploading video:', error);
     if (axios.isAxiosError(error)) {
@@ -92,6 +61,7 @@ export async function uploadVideo(file: File, onProgress?: (progress: number) =>
   }
 }
 
+
 // Analyze video for highlights using AssemblyAI
 export async function analyzeVideo(audioUrl: string, onProgress?: (progress: number) => void): Promise<any> {
   try {
@@ -103,6 +73,7 @@ export async function analyzeVideo(audioUrl: string, onProgress?: (progress: num
         sentiment_analysis: true,
         entity_detection: true,
         summarization: true,
+        speaker_labels: true,
       },
       {
         headers: {
@@ -182,7 +153,7 @@ export async function generateShort(
     
     // Start the prediction with Replicate
     const startResponse = await axios.post(
-      'https://api.replicate.com/v1/predictions',
+      'http://localhost:5001/api/replicate',
       {
         version: 'fe63569d6fe76ebd5eae2ff1ae7d8815dabcc9de2f7b30c2acce5c0f62061ed0',
         input: {
@@ -193,8 +164,8 @@ export async function generateShort(
         },
       },
       {
+        // No Authorization header needed, the proxy adds it
         headers: {
-          'Authorization': `Token ${REPLICATE_KEY}`,
           'Content-Type': 'application/json',
         },
         timeout: 10000,

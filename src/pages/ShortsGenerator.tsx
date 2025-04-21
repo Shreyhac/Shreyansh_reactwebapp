@@ -15,6 +15,7 @@ const ShortsGenerator = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [shortVideoUrl, setShortVideoUrl] = useState<string | null>(null);
   const [emailInput, setEmailInput] = useState('');
+  const [transcriptText, setTranscriptText] = useState<string>('');
   
   const { addNotification } = useAppContext();
 
@@ -45,12 +46,80 @@ const ShortsGenerator = () => {
       setProcessingProgress(40);
       setProcessingStage('Identifying highlights...');
       
-      // Get highlights from the analysis
-      const highlights = analysisResult.sentences.map((sentence: any) => ({
-        start: sentence.start / 1000, // Convert to seconds
-        end: sentence.end / 1000,
-        text: sentence.text,
-      }));
+      // Extract and set transcript text (all spoken text)
+      let transcriptTextValue = '';
+      if (analysisResult && Array.isArray(analysisResult.utterances)) {
+        transcriptTextValue = analysisResult.utterances.map((u: any) => u.text).join(' ');
+      } else if (analysisResult && Array.isArray(analysisResult.words)) {
+        transcriptTextValue = analysisResult.words.map((w: any) => w.text).join(' ');
+      } else if (analysisResult && Array.isArray(analysisResult.sentences)) {
+        transcriptTextValue = analysisResult.sentences.map((s: any) => s.text).join(' ');
+      } else if (analysisResult && analysisResult.text) {
+        transcriptTextValue = analysisResult.text;
+      }
+      setTranscriptText(transcriptTextValue);
+      
+      // Debug log the analysis result
+      console.log('Analysis Result:', analysisResult);
+      let highlights: Array<{ start: number; end: number; text: string }> = [];
+      if (analysisResult && Array.isArray(analysisResult.utterances)) {
+        console.log('Using utterances for highlights');
+        highlights = analysisResult.utterances.map((utterance: any) => ({
+          start: utterance.start / 1000,
+          end: utterance.end / 1000,
+          text: utterance.text,
+        }));
+      } else if (analysisResult && Array.isArray(analysisResult.words)) {
+        console.log('Using words for highlights');
+        // Group words into 5-second chunks for highlights
+        let chunk = [];
+        let chunkStart = null;
+        for (const word of analysisResult.words) {
+          if (chunkStart === null) chunkStart = word.start;
+          chunk.push(word);
+          if ((word.end - chunkStart) > 5000) { // 5 seconds
+            highlights.push({
+              start: chunkStart / 1000,
+              end: word.end / 1000,
+              text: chunk.map((w: any) => w.text).join(' ')
+            });
+            chunk = [];
+            chunkStart = null;
+          }
+        }
+        if (chunk.length > 0) {
+          highlights.push({
+            start: chunkStart / 1000,
+            end: chunk[chunk.length - 1].end / 1000,
+            text: chunk.map((w: any) => w.text).join(' ')
+          });
+        }
+      } else if (analysisResult && Array.isArray(analysisResult.sentences)) {
+        console.log('Using sentences for highlights');
+        highlights = analysisResult.sentences.map((sentence: any) => ({
+          start: sentence.start / 1000,
+          end: sentence.end / 1000,
+          text: sentence.text,
+        }));
+      } else {
+        console.error('Error: No utterances, words, or sentences array found', analysisResult);
+        if (analysisResult && analysisResult.audio_url) {
+          console.log('AssemblyAI audio_url:', analysisResult.audio_url);
+        }
+        setIsProcessing(false);
+        addNotification('No speech detected in the video. Please upload a video with clear spoken audio.', 'error');
+        return;
+      }
+
+      // If highlights array is empty, show a user-friendly error
+      if (!highlights.length) {
+        if (analysisResult && analysisResult.audio_url) {
+          console.log('AssemblyAI audio_url:', analysisResult.audio_url);
+        }
+        setIsProcessing(false);
+        addNotification('No speech detected in the video. Please upload a video with clear spoken audio.', 'error');
+        return;
+      }
       
       setProcessingProgress(50);
       setProcessingStage('Generating short video...');
@@ -126,6 +195,16 @@ const ShortsGenerator = () => {
                 disabled={isProcessing || isUploading}
               />
             </div>
+
+            {/* Transcript Box */}
+            {transcriptText && (
+              <div className="glass-card mt-6">
+                <h3 className="text-xl font-heading mb-2">Transcript (All Spoken Text)</h3>
+                <div className="text-white/80 text-sm whitespace-pre-wrap max-h-64 overflow-y-auto border border-white/10 rounded-md p-3 bg-black/20">
+                  {transcriptText}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="h-full">
