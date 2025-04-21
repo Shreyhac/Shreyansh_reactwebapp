@@ -8,6 +8,9 @@ const SavedIdeas = () => {
 
   return (
     <div>
+      <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">
+        Made by Shreyansh Arora 24BCS10252
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

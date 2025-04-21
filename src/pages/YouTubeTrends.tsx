@@ -24,7 +24,6 @@ const YouTubeTrends = () => {
       const data = await fetchTrendingVideos('US', selectedCategory);
       setVideos(data);
     } catch (error) {
-      console.error('Error loading trending videos:', error);
       addNotification('Failed to load trending videos', 'error');
     } finally {
       setLoading(false);
@@ -43,7 +42,6 @@ const YouTubeTrends = () => {
       const results = await searchVideos(searchQuery);
       setVideos(results);
     } catch (error) {
-      console.error('Error searching videos:', error);
       addNotification('Failed to search videos', 'error');
     } finally {
       setLoading(false);
@@ -57,6 +55,9 @@ const YouTubeTrends = () => {
 
   return (
     <div>
+      <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">
+        Made by Shreyansh Arora 24BCS10252
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

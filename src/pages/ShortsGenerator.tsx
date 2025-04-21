@@ -27,7 +27,7 @@ const ShortsGenerator = () => {
     setShortVideoUrl(null);
     
     try {
-      // Upload the video
+      
       const uploadUrl = await uploadVideo(file, (progress) => {
         setUploadProgress(progress);
       });
@@ -37,16 +37,16 @@ const ShortsGenerator = () => {
       setProcessingStage('Analyzing video content...');
       setProcessingProgress(10);
       
-      // Analyze the video
+      
       const analysisResult = await analyzeVideo(uploadUrl, (progress) => {
-        setProcessingProgress(10 + progress * 0.3); // 10-40% progress
+        setProcessingProgress(10 + progress * 0.3); 
         setProcessingStage('Analyzing video content...');
       });
       
       setProcessingProgress(40);
       setProcessingStage('Identifying highlights...');
       
-      // Extract and set transcript text (all spoken text)
+      
       let transcriptTextValue = '';
       if (analysisResult && Array.isArray(analysisResult.utterances)) {
         transcriptTextValue = analysisResult.utterances.map((u: any) => u.text).join(' ');
@@ -59,7 +59,7 @@ const ShortsGenerator = () => {
       }
       setTranscriptText(transcriptTextValue);
       
-      // Debug log the analysis result
+      
       console.log('Analysis Result:', analysisResult);
       let highlights: Array<{ start: number; end: number; text: string }> = [];
       if (analysisResult && Array.isArray(analysisResult.utterances)) {
@@ -71,13 +71,13 @@ const ShortsGenerator = () => {
         }));
       } else if (analysisResult && Array.isArray(analysisResult.words)) {
         console.log('Using words for highlights');
-        // Group words into 5-second chunks for highlights
+        
         let chunk = [];
         let chunkStart = null;
         for (const word of analysisResult.words) {
           if (chunkStart === null) chunkStart = word.start;
           chunk.push(word);
-          if ((word.end - chunkStart) > 5000) { // 5 seconds
+          if ((word.end - chunkStart) > 5000) { 
             highlights.push({
               start: chunkStart / 1000,
               end: word.end / 1000,
@@ -111,7 +111,7 @@ const ShortsGenerator = () => {
         return;
       }
 
-      // If highlights array is empty, show a user-friendly error
+      
       if (!highlights.length) {
         if (analysisResult && analysisResult.audio_url) {
           console.log('AssemblyAI audio_url:', analysisResult.audio_url);
@@ -124,9 +124,9 @@ const ShortsGenerator = () => {
       setProcessingProgress(50);
       setProcessingStage('Generating short video...');
       
-      // Generate the short video
+      
       const shortUrl = await generateShort(uploadUrl, highlights, (progress) => {
-        setProcessingProgress(50 + progress * 0.5); // 50-100% progress
+        setProcessingProgress(50 + progress * 0.5); 
         setProcessingStage('Generating short video...');
       });
       
@@ -136,7 +136,7 @@ const ShortsGenerator = () => {
       setIsProcessing(false);
       addNotification('Short video generated successfully!', 'success');
       
-      // Send email notification if provided
+      
       if (emailInput) {
         await sendEmail({
           to_email: emailInput,
@@ -158,6 +158,9 @@ const ShortsGenerator = () => {
   
   return (
     <div>
+      <div className="w-full text-center py-2 text-lg font-heading text-secondary tracking-wider bg-black/30 rounded-b-lg mb-4">
+        Made by Shreyansh Arora 24BCS10252
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -196,7 +199,7 @@ const ShortsGenerator = () => {
               />
             </div>
 
-            {/* Transcript Box */}
+            
             {transcriptText && (
               <div className="glass-card mt-6">
                 <h3 className="text-xl font-heading mb-2">Transcript (All Spoken Text)</h3>
